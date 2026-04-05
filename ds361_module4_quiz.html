@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS361 – Module 4 Quiz | Planning: Project Initiation</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7b6ef6;
+    --accent-light: #a99ef8;
+    --accent-dim: rgba(123,110,246,0.15);
+    --green: #3ecf8e;
+    --green-dim: rgba(62,207,142,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.12);
+    --text: #e8eaf0;
+    --text-muted: #8b90a0;
+    --text-dim: #5a5f70;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,110,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,110,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeDown .5s ease both;
+  }
+
+  .course-tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid rgba(123,110,246,0.25);
+    border-radius: 999px;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: .4rem;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    animation: fadeUp .4s ease both;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 999px;
+    transition: width .4s ease;
+  }
+
+  .q-count {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .score-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .score-num {
+    color: var(--accent-light);
+    font-weight: 500;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt-btn {
+    width: 100%;
+    text-align: left;
+    padding: 13px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s, transform .1s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    background: rgba(123,110,246,0.08);
+    border-color: rgba(123,110,246,0.3);
+    color: var(--text);
+    transform: translateX(2px);
+  }
+
+  .opt-btn .opt-letter {
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background .15s, border-color .15s;
+  }
+
+  .opt-btn:disabled { cursor: default; transform: none; }
+
+  .opt-btn.correct {
+    background: var(--green-dim);
+    border-color: rgba(62,207,142,0.4);
+    color: var(--green);
+  }
+  .opt-btn.correct .opt-letter {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0d0f14;
+  }
+
+  .opt-btn.wrong {
+    background: var(--red-dim);
+    border-color: rgba(248,113,113,0.4);
+    color: var(--red);
+  }
+  .opt-btn.wrong .opt-letter {
+    background: var(--red);
+    border-color: var(--red);
+    color: #0d0f14;
+  }
+
+  .opt-btn.reveal {
+    background: var(--blue-dim);
+    border-color: rgba(96,165,250,0.4);
+    color: var(--blue);
+  }
+  .opt-btn.reveal .opt-letter {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #0d0f14;
+  }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border-left: 3px solid var(--text-dim);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    min-height: 48px;
+    transition: border-color .2s;
+  }
+
+  .feedback.show-correct { border-color: var(--green); }
+  .feedback.show-wrong   { border-color: var(--red); }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .next-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 10px 22px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    display: none;
+  }
+
+  .next-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
+  .next-btn:active { transform: translateY(0); }
+
+  .result-screen {
+    display: none;
+    text-align: center;
+    padding: 1rem 0;
+    animation: fadeUp .4s ease both;
+  }
+
+  .result-ring {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 0%, var(--accent) var(--pct, 0%), var(--surface2) var(--pct, 0%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .result-ring::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: var(--surface);
+  }
+
+  .result-pct {
+    position: relative;
+    z-index: 1;
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-light);
+  }
+
+  .result-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: .5rem;
+  }
+
+  .result-msg {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .restart-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 11px 28px;
+    background: transparent;
+    color: var(--accent-light);
+    border: 1px solid rgba(123,110,246,0.4);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .restart-btn:hover { background: var(--accent-dim); }
+
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 500px) {
+    .quiz-card { padding: 1.25rem; }
+    .q-text { font-size: 15px; }
+    .opt-btn { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="course-tag">DS361 &nbsp;·&nbsp; System Analysis &amp; Design</div>
+    <h1>Module 4 Quiz</h1>
+    <p>Planning: Project Initiation &nbsp;·&nbsp; 36 Questions</p>
+  </div>
+
+  <div class="quiz-card" id="quiz-card">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="q-count" id="q-count">1 / 36</div>
+    </div>
+
+    <div class="score-badge">
+      <span>Score</span>
+      <span class="score-num" id="score-num">0 / 0</span>
+    </div>
+
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="nav-row">
+      <button class="next-btn" id="next-btn">Next →</button>
+    </div>
+  </div>
+
+  <div class="result-screen" id="result-screen">
+    <div class="result-ring" id="result-ring">
+      <span class="result-pct" id="result-pct">0%</span>
+    </div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <button class="restart-btn" id="restart-btn">↺ Restart Quiz</button>
+  </div>
+
+  <div class="footer">Saudi Electronic University &nbsp;·&nbsp; DS361 Module 4</div>
+</div>
+
+<script>
+const LETTERS = ['A','B','C','D'];
+
+const ALL_QUESTIONS = [
+  {q:"What does the abbreviation 'PIP' stand for in the context of systems development?",opts:["Project Integration Process","Project Initiation and Planning","Project Identification and Prioritization","Planning and Implementation Phase"],ans:1,exp:"PIP stands for Project Initiation and Planning, which is the phase that follows project identification and selection in the SDLC."},
+  {q:"A key consideration when conducting PIP is deciding:",opts:["Which development team members to assign to the project","When PIP ends and when the analysis phase of the SDLC begins","How much the project will cost relative to the budget","Which technologies and tools will be used to build the system"],ans:1,exp:"A key consideration is deciding when PIP ends and when analysis, the next phase of the SDLC, begins."},
+  {q:"Which of the following is a task performed during project initiation?",opts:["Conducting break-even analysis and ROI calculations","Establishing an initiation team and a relationship with the customer","Designing the system architecture and selecting platforms","Writing detailed test cases and test procedures"],ans:1,exp:"Project initiation tasks include establishing an initiation team, a relationship with the customer, a project initiation plan, management procedures, a project management environment, and a project workbook."},
+  {q:"Which of the following is a project planning task?",opts:["Establishing the initiation team and project workbook","Setting up the project management environment","Developing a preliminary schedule and communication plan","Selecting the project coordinator and walk-through participants"],ans:2,exp:"Project planning tasks include describing scope, dividing tasks, estimating resources, developing a preliminary schedule, developing a communication plan, identifying risks, creating a budget, and setting a baseline project plan."},
+  {q:"The 'Business Case' deliverable from PIP is best defined as:",opts:["A legal contract between the development team and the customer","The justification for an IS presented in terms of economic benefits, costs, and feasibility","A detailed technical specification of how the system will be built","A summary of stakeholder feedback collected during requirements gathering"],ans:1,exp:"The Business Case is the justification for an information system, presented in terms of the tangible and intangible economic benefits and costs and the technical and organizational feasibility of the proposed system."},
+  {q:"The Baseline Project Plan (BPP) is best described as:",opts:["A document that outlines the final system design approved by stakeholders","A major outcome from PIP containing the best estimate of a project's scope, benefits, costs, risks, and resources","A financial summary used to approve the budget for the entire SDLC","A communication plan prepared for the customer describing deliverables and timelines"],ans:1,exp:"The BPP is a major outcome and deliverable from the project initiation and planning phase that contains the best estimate of a project's scope, benefits, costs, risks, and resource requirements."},
+  {q:"The Project Scope Statement (PSS) is prepared for:",opts:["The internal development team to guide technical implementation","The customer, describing what the project will deliver and the work required","The steering committee to justify the budget allocation","The project manager to track progress against the baseline"],ans:1,exp:"The Project Scope Statement is a document prepared for the customer that describes what the project will deliver and outlines generally all work required to complete the project."},
+  {q:"Which of the following lists all six types of project feasibility assessed during PIP?",opts:["Economic, Technical, Operational, Schedule, Legal and Contractual, Political","Financial, Technical, Organizational, Time, Regulatory, Social","Economic, Functional, Structural, Schedule, Legal, Stakeholder","Strategic, Technical, Operational, Budget, Legal, Environmental"],ans:0,exp:"The six types of feasibility are: Economic, Technical, Operational, Schedule, Legal and Contractual, and Political feasibility."},
+  {q:"Economic feasibility is often referred to as:",opts:["Return on Investment analysis","Net present value estimation","Cost-benefit analysis","Break-even ratio calculation"],ans:2,exp:"Economic feasibility is often referred to as cost-benefit analysis, which involves identifying all the financial benefits and costs associated with a project."},
+  {q:"A tangible benefit is defined as:",opts:["A benefit that is difficult to measure and often qualitative in nature","A benefit derived from an IS that can be measured in dollars and with certainty","A benefit that results from improved employee morale and satisfaction","A benefit that only appears after the system has been in use for several years"],ans:1,exp:"A tangible benefit is a benefit derived from the creation of an information system that can be measured in dollars and with certainty."},
+  {q:"Which of the following is NOT listed as a category of tangible benefits?",opts:["Cost reduction and avoidance","Error reduction","Increased employee satisfaction","Opening new markets and increasing sales opportunities"],ans:2,exp:"The tangible benefit categories are: cost reduction/avoidance, error reduction, increased flexibility, increased speed of activity, improvement of management planning and control, and opening new markets. Employee satisfaction is an intangible benefit."},
+  {q:"A tangible cost associated with an IS is one that:",opts:["Cannot easily be measured in terms of dollars or with certainty","Can be measured in dollars and with certainty","Is related to user training and organizational change","Is incurred only after the system has been deployed and is in use"],ans:1,exp:"A tangible cost is a cost associated with an information system that can be measured in dollars and with certainty."},
+  {q:"An intangible cost is one that:",opts:["Can be measured precisely and expressed in dollar terms","Is associated with hardware procurement and software licenses","Cannot be easily measured in terms of dollars or with certainty","Occurs only once during the initial development or startup phase"],ans:2,exp:"An intangible cost is a cost associated with an information system that cannot be easily measured in terms of dollars or with certainty."},
+  {q:"Total Cost of Ownership (TCO) refers to:",opts:["The development cost alone, excluding ongoing maintenance expenses","The cost of owning and operating a system, including acquisition and all ongoing use and maintenance costs","The total budget approved for the project by the steering committee","The sum of one-time costs incurred during the startup phase of a project"],ans:1,exp:"TCO is the cost of owning and operating a system, including the total cost of acquisition, as well as all costs associated with its ongoing use and maintenance."},
+  {q:"A one-time cost is associated with:",opts:["The ongoing evolution and use of a deployed system","Project start-up and development or system start-up activities","Application software maintenance over the system's lifetime","Recurring infrastructure replacements and user support activities"],ans:1,exp:"A one-time cost is a cost associated with project start-up and development or system start-up."},
+  {q:"A recurring cost is one that results from:",opts:["Initial hardware procurement and software licensing at project start","Project personnel and training expenses during system development","The ongoing evolution and use of a deployed system","Site preparation and infrastructure setup before system launch"],ans:2,exp:"A recurring cost is a cost resulting from the ongoing evolution and use of a system."},
+  {q:"Which type of IS cost includes hardware, software, facilities infrastructure, and consulting services?",opts:["Start-Up costs","Operating costs","Procurement costs","Project costs"],ans:2,exp:"Procurement costs include hardware, software, facilities infrastructure, management and staff, and consulting and services."},
+  {q:"Which of the following is an example of an Operating cost?",opts:["Personnel recruiting and initial operating costs","Development activities and project personnel training","System maintenance, infrastructure replacements, and user training and support","User training and site preparation at system launch"],ans:2,exp:"Operating costs include infrastructure replacement/improvements, system maintenance, management and staff, and user training and support."},
+  {q:"Which of the following is a guideline for better cost estimating?",opts:["Finalize all estimates at the start and avoid changing them during the project","Rely solely on developer intuition rather than historical data","Use historical data to help establish better estimates of costs, risks, schedules, and resources","Assign cost estimation exclusively to project managers, not team members"],ans:2,exp:"One of the six guidelines is to use historical data to help in establishing better estimates of costs, risks, schedules, and resources."},
+  {q:"Net Present Value (NPV) calculates:",opts:["The ratio of net cash receipts to total cash outlays of a project","The time required for cumulative cash flow to equal the initial investment","The time value of money using a discount rate to determine the present value of cash flows","The total number of years before the project becomes financially profitable"],ans:2,exp:"NPV uses a discount rate to determine the present value of cash outlays and receipts, and calculates the time value of money."},
+  {q:"In the NPV formula PVn = Y × 1/(1+i)^n, what does 'i' represent?",opts:["The number of years into the project","The total net economic benefit of the project","The discount rate used to calculate present value","The initial one-time cost of the project"],ans:2,exp:"In the NPV formula, 'i' represents the discount rate used to calculate the present value of future cash flows."},
+  {q:"Return on Investment (ROI) is defined as:",opts:["The time required for cumulative cash flow to equal the initial investment","The ratio of net cash receipts to cash outlays of a project","The present value of all future benefits minus the present value of all future costs","The sum of all present values across all years of the project"],ans:1,exp:"ROI is the ratio of the net cash receipts of the project divided by the cash outlays of the project."},
+  {q:"Break-Even Analysis (BEA) identifies:",opts:["The discount rate needed to make the project financially attractive","The ratio of total benefits to total costs across the life of the project","The amount of time required for cumulative cash flow to equal initial and ongoing investment","The year in which the NPV of the project first exceeds the project budget"],ans:2,exp:"BEA finds the amount of time required for the cumulative cash flow from a project to equal its initial and ongoing investment."},
+  {q:"In the Pine Valley Furniture NPV example, the overall ROI of the project was:",opts:["0.12","0.50","0.24","1.80"],ans:2,exp:"The overall ROI shown in the example spreadsheet was 0.24, calculated as Overall NPV / NPV of All Costs."},
+  {q:"According to the Pine Valley Furniture example, the actual break-even occurred at approximately:",opts:["1.4 years","2.4 years","3.2 years","4.0 years"],ans:1,exp:"The actual break-even was calculated to occur at 2.4 years, between years 2 and 3 of the project."},
+  {q:"Technical feasibility assesses:",opts:["Whether the proposed system solves key business problems","The degree to which the project can be completed within organizational deadlines","The development organization's ability to construct the proposed system","The legal and contractual risks associated with building the system"],ans:2,exp:"Technical feasibility is a process of assessing the development organization's ability to construct a proposed system, taking into account various project risk factors."},
+  {q:"Which of the following is NOT listed as a potential consequence of failing to assess and manage technical risks?",opts:["Failure to attain expected benefits from the project","Inaccurate project cost estimates","Failure to adequately integrate the new system with existing systems","Increased speed of activity and improved management planning"],ans:3,exp:"Increased speed and improved management planning are tangible benefits, not consequences of poor risk management. The consequences include failure to attain benefits, inaccurate estimates, failure to achieve performance levels, and poor integration."},
+  {q:"Which of the four project risk assessment factors relates to the number of team members, project duration, and number of departments involved?",opts:["Development Group","User Group","Project Structure","Project Size"],ans:3,exp:"Project Size risk factors include number of members on the project team, project duration time, number of organizational departments involved, size of programming effort, and number of outsourcing partners."},
+  {q:"User perceptions, management commitment, and amount of user information in the development effort are all risk factors under:",opts:["Project Size","Project Structure","Development Group","User Group"],ans:1,exp:"Project Structure risk factors include new system vs. renovation, organizational/procedural/structural/personnel changes, user perceptions and willingness to participate, management commitment, and amount of user information in development."},
+  {q:"According to the risk matrix, which scenario presents the HIGHEST implementation risk?",opts:["High familiarity, large project, high structure","High familiarity, small project, low structure","Low familiarity, large project, high structure","Low familiarity, large project, low structure"],ans:3,exp:"A large project with low familiarity with technology or the application area combined with low structure is rated 'Very high risk' in the matrix."},
+  {q:"Operational feasibility is defined as:",opts:["The assessment of the development team's ability to build the proposed system","The process of evaluating how key stakeholders within the organization view the proposed system","The process of assessing the degree to which a proposed system solves business problems or takes advantage of opportunities","The assessment of potential legal and contractual ramifications due to the construction of a system"],ans:2,exp:"Operational feasibility is the process of assessing the degree to which a proposed system solves business problems or takes advantage of business opportunities."},
+  {q:"Schedule feasibility assesses:",opts:["The financial costs and benefits of the proposed project timeline","The degree to which potential time frames and completion dates meet organizational deadlines and constraints","The ability of the development team to meet technical milestones within budget","The level of political support for the project among senior management"],ans:1,exp:"Schedule feasibility is the process of assessing the degree to which the potential time frame and completion dates for all major activities within a project meet organizational deadlines and constraints."},
+  {q:"Political feasibility is the process of evaluating:",opts:["The legal and contractual ramifications due to system construction","How key stakeholders within the organization view the proposed system","The degree to which the project can be completed within available resources","The organization's ability to manage change resulting from the new system"],ans:1,exp:"Political feasibility is the process of evaluating how key stakeholders within the organization view the proposed system."},
+  {q:"The Baseline Project Plan (BPP) is organized into how many main sections?",opts:["Two sections: Introduction and Feasibility Assessment","Three sections: Introduction, System Description, and Management Issues","Four sections: Introduction, System Description, Feasibility Assessment, and Management Issues","Five sections: Overview, Scope, Feasibility, Resources, and Conclusions"],ans:2,exp:"The BPP has four sections: (1) Introduction, (2) System Description, (3) Feasibility Assessment, and (4) Management Issues."},
+  {q:"The Project Scope Statement (PSS) contains which of the following sections?",opts:["Project overview, recommendation, system description, feasibility assessment","Problem statement, project objectives, project description, business benefits, deliverables, expected duration","Introduction, technical analysis, operational analysis, legal analysis, political analysis","Team configuration, communication plan, project standards, project-specific topics"],ans:1,exp:"The PSS sections are: Problem statement, Project objectives, Project description, Business benefits, Deliverables, and Expected duration."},
+  {q:"A structured walk-through is defined as:",opts:["A formal presentation of the completed system to senior management for final approval","A peer group review of any product created during the systems development process","A one-on-one review session between the project manager and the customer","A technical audit conducted by an external consultant to verify system performance"],ans:1,exp:"A walk-through is a peer group review of any product created during the systems development process; also called a structured walk-through. Roles include coordinator, presenter, user, secretary, standard-bearer, and maintenance oracle."}
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let questions = shuffle(ALL_QUESTIONS);
+let current = 0, score = 0, answered = false;
+const total = questions.length;
+
+const qText    = document.getElementById('q-text');
+const options  = document.getElementById('options');
+const feedback = document.getElementById('feedback');
+const nextBtn  = document.getElementById('next-btn');
+const qCount   = document.getElementById('q-count');
+const pFill    = document.getElementById('progress-fill');
+const scoreNum = document.getElementById('score-num');
+const quizCard = document.getElementById('quiz-card');
+const resultSc = document.getElementById('result-screen');
+
+function render() {
+  if (current >= total) { showResult(); return; }
+  const q = questions[current];
+  answered = false;
+  qCount.textContent = `${current + 1} / ${total}`;
+  pFill.style.width = ((current / total) * 100) + '%';
+  scoreNum.textContent = `${score} / ${current}`;
+  qText.textContent = q.q;
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  nextBtn.style.display = 'none';
+  options.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span>${o}</span>`;
+    btn.onclick = () => selectAnswer(i, q);
+    options.appendChild(btn);
+  });
+}
+
+function selectAnswer(i, q) {
+  if (answered) return;
+  answered = true;
+  const btns = options.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+  if (i === q.ans) {
+    btns[i].classList.add('correct');
+    score++;
+    feedback.textContent = '✓ Correct! ' + q.exp;
+    feedback.classList.add('show-correct');
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    feedback.textContent = '✗ Incorrect. ' + q.exp;
+    feedback.classList.add('show-wrong');
+  }
+  scoreNum.textContent = `${score} / ${current + 1}`;
+  nextBtn.style.display = 'inline-block';
+}
+
+nextBtn.onclick = () => { current++; render(); };
+
+function showResult() {
+  quizCard.style.display = 'none';
+  resultSc.style.display = 'block';
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('result-pct').textContent = pct + '%';
+  document.getElementById('result-ring').style.setProperty('--pct', pct + '%');
+  document.getElementById('result-score').textContent = `You scored ${score} out of ${total}`;
+  let msg = '';
+  if (pct >= 85) msg = 'Excellent work! You have a strong grasp of Module 4 — Project Initiation and Feasibility.';
+  else if (pct >= 70) msg = 'Good job! Review the topics you missed to solidify your understanding before the exam.';
+  else if (pct >= 50) msg = 'Keep studying — focus on feasibility types, cost-benefit analysis, and the BPP structure.';
+  else msg = 'This module needs more review. Go back through the slides and try again!';
+  document.getElementById('result-msg').textContent = msg;
+}
+
+document.getElementById('restart-btn').onclick = () => {
+  questions = shuffle(ALL_QUESTIONS);
+  current = 0; score = 0;
+  quizCard.style.display = 'block';
+  resultSc.style.display = 'none';
+  render();
+};
+
+render();
+</script>
+</body>
+</html>
